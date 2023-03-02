@@ -12,6 +12,8 @@ jobs:
   build_image_and_push:
     runs-on: ubuntu-latest
     steps:
+      - name: Add SHORT_SHA env property with commit short sha
+        run: echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
       - name: Checkout
         uses: actions/checkout@v3
       - name: Set up QEMU
@@ -41,5 +43,5 @@ jobs:
           cache-to: type=gha,mode=max
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/strapi:${{ github.sha::7 }}
+            ghcr.io/${{ github.repository_owner }}/strapi:${GITHUB_SHA}
             ghcr.io/${{ github.repository_owner }}/strapi:latest
