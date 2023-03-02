@@ -14,6 +14,7 @@ RUN create-strapi-app strapi --quickstart --no-run
 RUN rm /strapi/.env
 
 WORKDIR /strapi
+RUN yarn add mysql
 VOLUME /strapi/public/uploads
 EXPOSE ${PORT}
 
