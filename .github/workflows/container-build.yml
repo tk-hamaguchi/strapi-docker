@@ -1,7 +1,7 @@
 name: Build container
 
 on:
-  # - push
+  push: {}
   workflow_dispatch:
     inputs:
       version:
@@ -45,4 +45,6 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.repository_owner }}/strapi:${{ steps.sha_short.outputs.sha_short }}
+            ghcr.io/${{ github.repository_owner }}/strapi:${{ github.event.inputs.version }}
+            ghcr.io/${{ github.repository_owner }}/strapi:${{ github.event.inputs.version }}-build${{github.run_number}}
             ghcr.io/${{ github.repository_owner }}/strapi:latest
