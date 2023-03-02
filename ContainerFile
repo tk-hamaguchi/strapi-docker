@@ -1,28 +1,23 @@
-FROM node:16-alpine as build
-RUN apk update && apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev vips-dev > /dev/null 2>&1
+FROM node:18-bullseye
+
+RUN apt -qq update && apt -qq upgrade -y && apt -qq clean && rm -rf /var/lib/apt/lists/*
+
+ARG version=4.7.1
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 
-ARG version=4.6.2
-RUN mkdir -p /usr/local/src/
-WORKDIR /usr/local/src/
-RUN /usr/bin/wget -P /usr/local/src/ https://github.com/strapi/strapi/archive/refs/tags/v${version}.tar.gz
-RUN /bin/tar zxvf /usr/local/src/v${version}.tar.gz -C /opt/
-WORKDIR /opt/strapi-${version}/
-ENV PATH /opt/strapi-${version}/node_modules/.bin:$PATH
-RUN yarn config set network-timeout 600000 -g && yarn install --production
-RUN yarn global add lerna speed-measure-webpack-plugin
-WORKDIR /opt/strapi-${version}/app
-RUN yarn build
+ENV HOST=0.0.0.0
+ENV PORT=1337
 
+RUN yarn global add create-strapi-app@${version}
+RUN create-strapi-app strapi --quickstart --no-run
+RUN rm /strapi/.env
 
-FROM node:16-alpine
-RUN apk add --no-cache vips-dev
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
-WORKDIR /opt/app
-COPY --from=build /opt/strapi-${version}/node_modules ./node_modules
-ENV PATH /opt/node_modules/.bin:$PATH
-COPY --from=build /opt/strapi-${version}/app ./
-EXPOSE 1337
-CMD ["yarn", "start"]
+WORKDIR /strapi
+VOLUME /strapi/public/uploads
+EXPOSE ${PORT}
+
+HEALTHCHECK --start-period=30s --timeout=3s \
+    CMD curl -X HEAD http://localhost:${PORT}/_health -s || exit 1
+
+CMD ["/usr/local/bin/yarn", "start"]

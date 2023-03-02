@@ -6,7 +6,7 @@ on:
     inputs:
       version:
         required: true
-        default: "4.6.2"
+        default: "4.7.1"
 
 jobs:
   build_image_and_push:
@@ -41,4 +41,5 @@ jobs:
           cache-to: type=gha,mode=max
           push: true
           tags: |
-            ghcr.io/tk-hamaguchi/strapi
+            ghcr.io/${{ github.repository_owner }}/strapi:${{ github.sha::7 }}
+            ghcr.io/${{ github.repository_owner }}/strapi:latest
