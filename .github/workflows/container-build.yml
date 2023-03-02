@@ -39,12 +39,12 @@ jobs:
           file: ContainerFile
           platforms: ${{ steps.buildx.outputs.platforms }}
           build-args: |
-            version=${{ github.event.inputs.version }}
+            version=${{ inputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           push: true
           tags: |
             ghcr.io/${{ github.repository_owner }}/strapi:${{ steps.sha_short.outputs.sha_short }}
-            ghcr.io/${{ github.repository_owner }}/strapi:${{ github.event.inputs.version }}
-            ghcr.io/${{ github.repository_owner }}/strapi:${{ github.event.inputs.version }}-build${{github.run_number}}
+            ghcr.io/${{ github.repository_owner }}/strapi:${{ inputs.version }}
+            ghcr.io/${{ github.repository_owner }}/strapi:${{ inputs.version }}-build${{github.run_number}}
             ghcr.io/${{ github.repository_owner }}/strapi:latest
